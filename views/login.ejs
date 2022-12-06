@@ -45,21 +45,28 @@
     <!-- Login Start -->
     <div class="container d-flex justify-content-center py-6 fadeInUp">
         <div class="col-lg-4 pt-lg-12 py-6 text-center">
-            <form action="/" method="post" id="login" class="row g-1">
+            <form action="/login" method="post" id="login" class="row g-1" autocomplete="on">
                 <div class="mb-2">
                     <div class="form-floating">
                         <h1 class="text-primary py-2">NoteIt</h1>
                     </div>
+                    <% if (warning) { %>
+                        <div class="form-floating">
+                            <p class="text-danger py-2">Invalid username or password</p>
+                        </div>
+                        <% } %>
                 </div>
                 <div class="mb-2 py-2">
                     <div class="form-floating">
-                        <input type="text" class="form-control" id="username" placeholder="Username" required>
-                        <label for="username">Username</label>
+                        <input type="text" class="form-control" autocomplete="username" name="email"
+                            value="<%= username %>" placeholder="Username" required>
+                        <label for="email">Username</label>
                     </div>
                 </div>
                 <div class="mb-2 py-2">
                     <div class="form-floating">
-                        <input type="password" class="form-control" id="password" placeholder="Password" required>
+                        <input type="password" class="form-control" autocomplete="current-password" name="password"
+                            placeholder="Password" required>
                         <label for="password">Password</label>
                     </div>
                 </div>
