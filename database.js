@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
+import { format } from 'date-fns';
 
 dotenv.config();
 
@@ -49,6 +50,26 @@ const fileSchema = new mongoose.Schema({
     fileSize: String,
     owner: mongoose.SchemaTypes.ObjectId
 });
+
+const noteSchema = new mongoose.Schema({
+    done: {
+        type: Boolean,
+        default: false
+    },
+    title: {
+        type: String,
+        required: true
+    },
+    body: String,
+    date: {
+        type: String,
+        default: format(new Date(), 'dd MMMM yyyy')
+    },
+    attachment: mongoose.SchemaTypes.ObjectId,
+    owner: mongoose.SchemaTypes.ObjectId
+});
+
+export const Note = mongoose.model("Note", noteSchema);
 
 export const File = mongoose.model("File", fileSchema);
 

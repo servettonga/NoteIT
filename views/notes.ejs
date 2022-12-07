@@ -135,26 +135,27 @@
                 <div class="modal-body">
                     <div class="container-fluid justify-content-center">
                         <div class="col-lg-12 fadeInUp" data-wow-delay="0.1s">
-                            <form action="/" method="post" id="newNote">
+                            <form action="/notes" method="post" id="newNote" enctype="multipart/form-data">
                                 <div class="row g-3">
                                     <div class="col-12">
                                         <div class="form-floating">
                                             <input type="text" class="form-control" id="newTitle" placeholder="Title"
-                                                required>
+                                                name="noteTitle" required>
                                             <label for="title">Title</label>
                                         </div>
                                     </div>
                                     <div class="col-12">
                                         <div class="form-floating">
                                             <textarea class="form-control" placeholder="Body" id="newBody"
-                                                style="height: 200px"></textarea>
+                                                style="height: 200px" name="noteBody"></textarea>
                                             <label for="body">Body</label>
                                         </div>
                                     </div>
                                     <div class="row g-3 align-items-center">
                                         <div class="col-10">
                                             <div class="form-floating">
-                                                <input class="form-control" type="file" id="attachment">
+                                                <input class="form-control" type="file" id="noteAttachment"
+                                                    name="noteAttachment">
                                                 <label for="attachment" class="form-label"
                                                     id="attachmentText">Attachment</label>
                                             </div>

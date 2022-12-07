@@ -1,16 +1,20 @@
 import dotenv from 'dotenv';
-import { User, File, connectDatabase } from './database.js';
+import { User, File, Note, connectDatabase } from './database.js';
 import express from 'express';
 import bodyParser from 'body-parser';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import cookieParser from 'cookie-parser';
+import multer from 'multer';
 
 // Environment variables
 dotenv.config();
 
 // MongoDB connection
 connectDatabase();
+
+// Multer configuration
+const upload = multer({ dest: './public/data/uploads' })
 
 // Express settings
 const port = process.env.API_PORT
@@ -46,7 +50,36 @@ const verifyToken = (req, res, next) => {
 app.route("/notes")
 
     .get(verifyToken, (req, res) => {
+        const user = req.cookies.userid
+
         res.status(200).render("notes")
+    })
+
+    .post(upload.single('noteAttachment'), async (req, res) => {
+        const owner = req.cookies.userid
+        const title = req.body.noteTitle
+        const body = req.body.noteBody
+
+        async function upload() {
+            if (req.file !== undefined && req.file.size < 5000000) {
+                const attachmentData = {
+                    path: req.file.path,
+                    fileName: req.file.originalname,
+                    fileSize: `${(req.file.size * 0.000009765625).toFixed(2)} MB`,
+                    owner
+                }
+                const file = await File.create(attachmentData)
+                file.save()
+                return file.id
+            } return null
+        };
+
+        const attachment = await upload()
+
+        const noteToSave = new Note({ title, body, attachment, owner });
+        noteToSave.save();
+
+        res.redirect("/notes");
     })
 
 
@@ -89,7 +122,7 @@ app.route("/register")
             user.token = token;
 
             // return new user
-            res.status(201).json(user);
+            cookies(res, user)
 
         } catch (err) {
             console.log(err);
@@ -122,7 +155,7 @@ app.route("/login")
             /// Check whether user exists
             const existingUser = await User.findOne({ email });
 
-            if (existingUser && await bcrypt.compare(password, existingUser.password)) {
+            if (existingUser && bcrypt.compareSync(password, existingUser.password)) {
 
                 const token = jwt.sign(
                     { user_id: existingUser._id, email },
@@ -130,24 +163,11 @@ app.route("/login")
                     { expiresIn: "1h" }
                 );
 
-                // save token
+                // Save token
                 existingUser.token = token;
 
-                // redirect
-                const expire = new Date(Date.now() + 1 * 3600000) // cookie will be removed after 1 hour
-                res
-                    .status(201)
-                    .cookie('x-access-token', token, {
-                        expires: expire
-                    })
-                    .cookie('loggedin', true, {
-                        expires: expire
-                    })
-                    .cookie('userid', existingUser._id, {
-                        expires: expire
-                    })
-                    .cookie('username', existingUser.email)
-                    .redirect(301, '/notes')
+                // Redirect
+                cookies(res, existingUser)
 
             } else {
                 res
@@ -166,11 +186,7 @@ app.route("/logout")
     .get((req, res) => {
 
         // Logout and clear cookies 
-        res
-            .clearCookie('x-access-token', 'loggedin', 'userid')
-            .clearCookie('loggedin')
-            .clearCookie('userid')
-            .redirect('/login')
+        clearCookies(res)
     });
 
 
@@ -178,5 +194,31 @@ app.use("*", (req, res) => {
     res.redirect('/login');
 });
 
+
+// Create cookies and redirect
+function cookies(res, existingUser) {
+    const expire = new Date(Date.now() + 1 * 3600000) // cookie will be removed after 1 hour
+    return res
+        .status(201)
+        .cookie('x-access-token', existingUser.token, {
+            expires: expire
+        })
+        .cookie('loggedin', true, {
+            expires: expire
+        })
+        .cookie('userid', existingUser._id, {
+            expires: expire
+        })
+        .cookie('username', existingUser.email)
+        .redirect(301, '/notes')
+};
+
+function clearCookies(res) {
+    res
+        .clearCookie('x-access-token', 'loggedin', 'userid')
+        .clearCookie('loggedin')
+        .clearCookie('userid')
+        .redirect('/login')
+};
 
 app.listen(port, () => { console.log(`Server running on port ${port}`) });
