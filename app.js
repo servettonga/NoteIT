@@ -49,10 +49,11 @@ const verifyToken = (req, res, next) => {
 
 app.route("/notes")
 
-    .get(verifyToken, (req, res) => {
-        const user = req.cookies.userid
-
-        res.status(200).render("notes")
+    .get(verifyToken, async (req, res) => {
+        const user = await User.findById({ _id: req.cookies.userid })
+        const username = user.name
+        const notes = await Note.find({ owner: user }).populate("attachment")
+        res.status(200).render("notes", { username, notes })
     })
 
     .post(upload.single('noteAttachment'), async (req, res) => {
@@ -74,14 +75,17 @@ app.route("/notes")
             } return null
         };
 
-        const attachment = await upload()
-
-        const noteToSave = new Note({ title, body, attachment, owner });
+        const noteToSave = new Note({ title, body, attachment: await upload(), owner });
         noteToSave.save();
 
         res.redirect("/notes");
     })
 
+
+app.get("/download/:file", async (req, res) => {
+    const file = await File.findById({ _id: req.params.file })
+    res.download(`${file.path}`, file.fileName)
+})
 
 app.route("/register")
 

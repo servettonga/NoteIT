@@ -1,179 +1,177 @@
 <%- include('header') %>
-    <!-- Notes Start -->
-    <div class="container d-flex justify-content-center py-6">
-        <div class="pt-lg-12 py-5">
-            <div>
-                <p class="text-primary text-uppercase mb-2" style="margin-left: 1rem">// ALL NOTES</p>
-            </div>
-            <!-- Items -->
-            <div class="row g-5">
-                <div class="col-lg-12  fadeInUp">
-                    <div class="row h-100">
-                        <div class="col-lg-10">
-                            <a class="h5 mb-1" href="#" data-bs-toggle="modal" data-bs-target="#noteDetails">
-                                <i class="fa fa-check text-primary me-2" id="check-noteid"></i>Four Foolproof Ways to
-                                Get Better Sleep</a>
-                            <p style="margin-left: 2rem">How do you wind down once you climb into bed?</p>
-                        </div>
-                        <div class="col-lg-2">
-                            <p class="text-primary">01/02/2023</p>
-                        </div>
-
-                    </div>
-
-                    <div class="modal fade" id="noteDetails" tabindex="-1" aria-labelledby="noteDetails"
-                        aria-hidden="true">
-                        <div
-                            class="modal-dialog modal-fullscreen-md-down modal-dialog-centered modal-dialog-scrollable">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h1 class="modal-title fs-5">
-                                        Four Foolproof Ways to Get Better Sleep
-                                    </h1>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                        aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body">
-                                    <p class="text-justify">
-                                        How do you wind down once you climb into bed? Lately I've been queueing up
-                                        hilarious podcasts while wrapped in our beloved Brooklinen sheets. But I'm
-                                        always curious about what others do to slow down their minds at night. Here are
-                                        four tips, plus the staples I swear by for a good night's sleep…
-                                    </p>
-                                    <p class="text-justify">
-                                        1. Start with fresh sheets. Sometimes I'll take an evening shower just because
-                                        nothing feels better than shaved legs and clean sheets, don't you think?
-                                        Brooklinen's classic percale sheets are super crisp (they feel like the cool
-                                        side of the pillow), and their buttery smooth luxe sateen sheets get softer
-                                        after each wash. (Also, wouldn't heathered cashmere bedding make the ultimate
-                                        holiday gift?)
-                                    </p>
-                                    <p class="fs-6 text-primary">01/02/2023</p>
-                                    <a href="/" target="_self">
-                                        <span class="fs-6 text-dark"><strong>attachment.doc</strong>
-                                            2.3MB</span>
-                                    </a>
-                                </div>
-
-                                <div class="modal-footer">
-                                    <form action="/" method="post" id="updateNote">
-                                        <button type="submit" class="btn btn-primary rounded-pill py-2 px-4"
-                                            data-bs-dismiss="modal" name="button" value="done">
-                                            Done
-                                        </button>
-                                        <button type="submit" class="btn btn-secondary rounded-pill py-2 px-4"
-                                            data-bs-dismiss="modal" name="button" value="delete">
-                                            Delete
-                                        </button>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- Items -->
-
-            <!-- Search and add -->
-            <div class="pt-lg-12 py-4 fadeInUp">
-                <button class="btn btn-outline-primary rounded-pill py-2 px-4 btn-sm" data-bs-toggle="modal"
-                    data-bs-target="#searchModal"><i class="fas fa-search"></i></button>
-                <button class="btn btn-primary rounded-pill py-2 px-4 btn-sm ms-2" data-bs-toggle="modal"
-                    data-bs-target="#compose"><i class="fas fa-plus"></i></button>
-            </div>
-
-            <!-- Search modal -->
-            <div class="modal fade" id="searchModal" tabindex="-1" aria-labelledby="searchModal" aria-hidden="true">
-                <div class="modal-dialog modal-lg modal-fullscreen-md-down modal-dialog-centered">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h1 class="modal-title fs-5 ms-3">
-                                Search in notes
-                            </h1>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            <div class="container-fluid justify-content-center">
-                                <div class="col-lg-12 fadeInUp">
-                                    <form action="/" method="post" id="search">
-                                        <div class="row g-3 align-items-center">
-                                            <div class="col-10">
-                                                <div class="mb-3">
-                                                    <input type="text" class="form-control" id="keywords" required>
-                                                </div>
-                                            </div>
-                                            <div class="col-2 text-center">
-                                                <button class="btn btn-primary rounded-pill py-2 px-4" type="submit"><i
-                                                        class="fas fa-search"></i></button>
-                                            </div>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
-            </div>
-            <!-- Search and add -->
+<!-- Notes Start -->
+<div class="container d-flex justify-content-center py-6">
+  <div class="pt-lg-12 py-5">
+    <div>
+      <p class="text-primary text-uppercase mb-2" style="margin-left: 1rem">// ALL NOTES</p>
+    </div>
+    <!-- Items -->
+    <% if (notes.length> 0) { %>
+    <% notes.forEach( note=> { %>
+    <div class="row g-5">
+      <div class="col-lg-12  fadeInUp">
+        <div class="row h-100">
+          <div class="col">
+            <a class="h5 mb-1" href="#" data-bs-toggle="modal" data-bs-target="#noteDetails<%= note.id %>">
+              <i class="fa fa-check text-primary me-2" id="check-noteid"></i>
+              <%if (note.title.length> 40) {%> <%= `${note.title.slice(0, 40)}...` %>
+              <% } else { %>
+              <%= note.title %>
+              <% } %>
+            </a>
+            <p style="margin-left: 2rem">
+              <%if (note.body.length> 50) {%> <%= `${note.body.slice(0, 50)}...` %>
+              <% } else { %>
+              <%= note.body %>
+              <% } %>
+            </p>
+          </div>
+          <div class="col-md-auto">
+            <p class="text-primary">
+              <%= note.date %>
+            </p>
+          </div>
 
         </div>
-    </div>
-    <!-- Notes End -->
 
-    <!-- Compose Start -->
+        <div class="modal fade" id="noteDetails<%= note.id %>" tabindex="-1" aria-labelledby="noteDetails" aria-hidden="true">
+          <div class="modal-dialog modal-fullscreen-lg-down modal-dialog-centered modal-dialog-scrollable modal-lg">
+            <div class="modal-content px-1">
+              <div class="modal-header">
+                <h1 class="modal-title fs-5">
+                  <%= note.title %>
+                </h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <p class="text-justify" style="white-space: pre-line;">
+                  <%= note.body %>
+                </p>
+                <p class="fs-6 text-primary">
+                  <%= note.date %>
+                </p>
+                <%if (note.attachment) {%>
+                <a href="/download/<%= note.attachment.id %>" target="_self">
+                  <span class="fs-6 text-dark"><strong>
+                      <%= note.attachment.fileName %>
+                    </strong>
+                    <%= note.attachment.fileSize %>
+                  </span>
+                </a>
+                <% } %>
+              </div>
 
-    <div class="modal fade" id="compose" tabindex="-1" aria-labelledby="compose" aria-hidden="true">
-        <div class="modal-dialog modal-lg modal-fullscreen-md-down modal-dialog-centered modal-dialog-scrollable">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5 ms-3">
-                        New note
-                    </h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="container-fluid justify-content-center">
-                        <div class="col-lg-12 fadeInUp" data-wow-delay="0.1s">
-                            <form action="/notes" method="post" id="newNote" enctype="multipart/form-data">
-                                <div class="row g-3">
-                                    <div class="col-12">
-                                        <div class="form-floating">
-                                            <input type="text" class="form-control" id="newTitle" placeholder="Title"
-                                                name="noteTitle" required>
-                                            <label for="title">Title</label>
-                                        </div>
-                                    </div>
-                                    <div class="col-12">
-                                        <div class="form-floating">
-                                            <textarea class="form-control" placeholder="Body" id="newBody"
-                                                style="height: 200px" name="noteBody"></textarea>
-                                            <label for="body">Body</label>
-                                        </div>
-                                    </div>
-                                    <div class="row g-3 align-items-center">
-                                        <div class="col-10">
-                                            <div class="form-floating">
-                                                <input class="form-control" type="file" id="noteAttachment"
-                                                    name="noteAttachment">
-                                                <label for="attachment" class="form-label"
-                                                    id="attachmentText">Attachment</label>
-                                            </div>
-                                        </div>
-                                        <div class="col-2 text-center">
-                                            <button class="btn btn-primary rounded-pill py-2 px-4"
-                                                type="submit">Save</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-
+              <div class="modal-footer">
+                <form action="/" method="post" id="updateNote">
+                  <button type="submit" class="btn btn-primary rounded-pill py-2 px-4" data-bs-dismiss="modal" name="button" value="done">
+                    Done
+                  </button>
+                  <button type="submit" class="btn btn-secondary rounded-pill py-2 px-4" data-bs-dismiss="modal" name="button" value="delete">
+                    Delete
+                  </button>
+                </form>
+              </div>
             </div>
+          </div>
         </div>
+      </div>
     </div>
-    <!-- Compose End -->
+    <% }) %>
+    <% } %>
+    <!-- Items -->
 
-    <%- include('footer') %>
+    <!-- Search and add -->
+    <div class="pt-lg-12 py-4 fadeInUp">
+      <button class="btn btn-outline-primary rounded-pill py-2 px-4 btn-sm" data-bs-toggle="modal" data-bs-target="#searchModal"><i class="fas fa-search"></i></button>
+      <button class="btn btn-primary rounded-pill py-2 px-4 btn-sm ms-2" data-bs-toggle="modal" data-bs-target="#compose"><i class="fas fa-plus"></i></button>
+    </div>
+
+    <!-- Search modal -->
+    <div class="modal fade" id="searchModal" tabindex="-1" aria-labelledby="searchModal" aria-hidden="true">
+      <div class="modal-dialog modal-lg modal-fullscreen-md-down modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5 ms-3">
+              Search in notes
+            </h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <div class="container-fluid justify-content-center">
+              <div class="col-lg-12 fadeInUp">
+                <form action="/" method="post" id="search">
+                  <div class="row g-3 align-items-center">
+                    <div class="col-10">
+                      <div class="mb-3">
+                        <input type="text" class="form-control" id="keywords" required>
+                      </div>
+                    </div>
+                    <div class="col-2 text-center">
+                      <button class="btn btn-primary rounded-pill py-2 px-4" type="submit"><i class="fas fa-search"></i></button>
+                    </div>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+    <!-- Search and add -->
+
+  </div>
+</div>
+<!-- Notes End -->
+
+<!-- Compose Start -->
+
+<div class="modal fade" id="compose" tabindex="-1" aria-labelledby="compose" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-fullscreen-md-down modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 ms-3">
+          New note
+        </h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="container-fluid justify-content-center">
+          <div class="col-lg-12 fadeInUp" data-wow-delay="0.1s">
+            <form action="/notes" method="post" id="newNote" enctype="multipart/form-data">
+              <div class="row g-3">
+                <div class="col-12">
+                  <div class="form-floating">
+                    <input type="text" class="form-control" id="newTitle" placeholder="Title" name="noteTitle" required>
+                    <label for="title">Title</label>
+                  </div>
+                </div>
+                <div class="col-12">
+                  <div class="form-floating">
+                    <textarea class="form-control" placeholder="Body" id="newBody" style="height: 200px" name="noteBody"></textarea>
+                    <label for="body">Body</label>
+                  </div>
+                </div>
+                <div class="row g-3 align-items-center">
+                  <div class="col-10">
+                    <div class="form-floating">
+                      <input class="form-control" type="file" id="noteAttachment" name="noteAttachment">
+                      <label for="attachment" class="form-label" id="attachmentText">Attachment</label>
+                    </div>
+                  </div>
+                  <div class="col-2 text-center">
+                    <button class="btn btn-primary rounded-pill py-2 px-4" type="submit">Save</button>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+<!-- Compose End -->
+
+<%- include('footer') %>

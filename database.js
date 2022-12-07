@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import mongoose, { Schema } from 'mongoose';
 import dotenv from 'dotenv';
 import { format } from 'date-fns';
 
@@ -19,7 +19,7 @@ export function connectDatabase() {
         });
 };
 
-const userSchema = new mongoose.Schema({
+const userSchema = new Schema({
     name: {
         type: String,
         unique: false,
@@ -38,7 +38,7 @@ const userSchema = new mongoose.Schema({
     }
 });
 
-const fileSchema = new mongoose.Schema({
+const fileSchema = new Schema({
     fileName: {
         type: String,
         required: true
@@ -48,10 +48,13 @@ const fileSchema = new mongoose.Schema({
         required: true
     },
     fileSize: String,
-    owner: mongoose.SchemaTypes.ObjectId
+    owner: {
+        type: Schema.Types.ObjectId,
+        ref: 'User'
+    }
 });
 
-const noteSchema = new mongoose.Schema({
+const noteSchema = new Schema({
     done: {
         type: Boolean,
         default: false
@@ -65,8 +68,14 @@ const noteSchema = new mongoose.Schema({
         type: String,
         default: format(new Date(), 'dd MMMM yyyy')
     },
-    attachment: mongoose.SchemaTypes.ObjectId,
-    owner: mongoose.SchemaTypes.ObjectId
+    attachment: {
+        type: Schema.Types.ObjectId,
+        ref: 'File'
+    },
+    owner: {
+        type: Schema.Types.ObjectId,
+        ref: 'User'
+    }
 });
 
 export const Note = mongoose.model("Note", noteSchema);
