@@ -13,7 +13,7 @@
         <div class="row h-100">
           <div class="col">
             <a class="h5 mb-1" href="#" data-bs-toggle="modal" data-bs-target="#noteDetails<%= note.id %>">
-              <i class="fa fa-check text-primary me-2" id="check-noteid"></i>
+              <i class="fa fa-check me-2 <%if (note.done) {%> text-primary <% } else { %> text-light <% } %>" id="check-noteid"></i>
               <%if (note.title.length> 40) {%> <%= `${note.title.slice(0, 40)}...` %>
               <% } else { %>
               <%= note.title %>
@@ -51,7 +51,7 @@
                   <%= note.date %>
                 </p>
                 <%if (note.attachment) {%>
-                <a href="/download/<%= note.attachment.id %>" target="_self">
+                <a href="/notes/download/<%= note.attachment.id %>" target="_self">
                   <span class="fs-6 text-dark"><strong>
                       <%= note.attachment.fileName %>
                     </strong>
@@ -62,11 +62,11 @@
               </div>
 
               <div class="modal-footer">
-                <form action="/" method="post" id="updateNote">
-                  <button type="submit" class="btn btn-primary rounded-pill py-2 px-4" data-bs-dismiss="modal" name="button" value="done">
-                    Done
+                <form action="/notes/update/<%= note.id %>" method="post" id="updateNote">
+                  <button type="submit" class="btn btn-primary rounded-pill py-2 px-4" name="done" value="<%= !note.done %>">
+                    <%if (note.done) {%>Undone<% } else { %>Done<% } %>
                   </button>
-                  <button type="submit" class="btn btn-secondary rounded-pill py-2 px-4" data-bs-dismiss="modal" name="button" value="delete">
+                  <button type="submit" class="btn btn-secondary rounded-pill py-2 px-4" name="button" value="delete">
                     Delete
                   </button>
                 </form>
@@ -80,7 +80,6 @@
     <% } %>
     <!-- Items -->
 
-    <!-- Search and add -->
     <div class="pt-lg-12 py-4 fadeInUp">
       <button class="btn btn-outline-primary rounded-pill py-2 px-4 btn-sm" data-bs-toggle="modal" data-bs-target="#searchModal"><i class="fas fa-search"></i></button>
       <button class="btn btn-primary rounded-pill py-2 px-4 btn-sm ms-2" data-bs-toggle="modal" data-bs-target="#compose"><i class="fas fa-plus"></i></button>
@@ -88,7 +87,7 @@
 
     <!-- Search modal -->
     <div class="modal fade" id="searchModal" tabindex="-1" aria-labelledby="searchModal" aria-hidden="true">
-      <div class="modal-dialog modal-lg modal-fullscreen-md-down modal-dialog-centered">
+      <div class="modal-dialog modal-lg modal-fullscreen-lg-down modal-dialog-centered">
         <div class="modal-content">
           <div class="modal-header">
             <h1 class="modal-title fs-5 ms-3">
@@ -118,16 +117,15 @@
         </div>
       </div>
     </div>
-    <!-- Search and add -->
+    <!-- Search modal -->
 
   </div>
 </div>
 <!-- Notes End -->
 
 <!-- Compose Start -->
-
 <div class="modal fade" id="compose" tabindex="-1" aria-labelledby="compose" aria-hidden="true">
-  <div class="modal-dialog modal-lg modal-fullscreen-md-down modal-dialog-centered modal-dialog-scrollable">
+  <div class="modal-dialog modal-lg modal-fullscreen-lg-down modal-dialog-centered modal-dialog-scrollable">
     <div class="modal-content">
       <div class="modal-header">
         <h1 class="modal-title fs-5 ms-3">
