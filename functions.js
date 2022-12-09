@@ -18,20 +18,22 @@ export async function verifyToken(req, res, next) {
     } catch (err) {
         return res.status(401).redirect('/login')
     }
+
+    return next()
 };
 
 
 // Manage cookies ----------------------------------------------------------------
-const expire = new Date(Date.now() + 1 * 3600000) // cookie will be removed after 1 hour
+function expire() { return new Date(Date.now() + 30 * 60000) } // cookie will be removed after 30 minutes
 
 export function createCookies(res, existingUser) {
     return res
         .status(201)
         .cookie('x-access-token', existingUser.token, {
-            expires: expire
+            expires: expire()
         })
         .cookie('loggedin', true, {
-            expires: expire
+            expires: expire()
         })
         .cookie('username', existingUser.email)
         .redirect(301, '/notes')
@@ -40,10 +42,10 @@ export function createCookies(res, existingUser) {
 export function extendCookies(req, res) {
     return res
         .cookie('x-access-token', req.cookies['x-access-token'], {
-            expires: expire
+            expires: expire()
         })
         .cookie('loggedin', true, {
-            expires: expire
+            expires: expire()
         })
         .cookie('username', req.cookies.username)
 };
