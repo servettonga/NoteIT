@@ -1,7 +1,7 @@
 import dotenv from 'dotenv';
 import { connectDatabase } from './database.js';
 import { User, File, Note } from './models.js';
-import { verifyToken, createCookies, extendCookies, clearCookies } from './functions.js';
+import * as fc from './functions.js';
 import express from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
@@ -9,7 +9,6 @@ import cookieParser from 'cookie-parser';
 import multer from 'multer';
 import fs from 'fs';
 import bytes from 'bytes';
-
 
 // app settings ----------------------------------------------------------------
 
@@ -21,7 +20,12 @@ connectDatabase();
 
 // Multer configuration
 const fileSizeLimit = 5 * 1024 * 1024
-const storage = multer.diskStorage({ limits: { fileSize: fileSizeLimit }, dest: './public/data/uploads' })
+const storage = multer.diskStorage({
+    limits: { fileSize: fileSizeLimit },
+    destination: (req, file, dest) => {
+        dest(null, './public/data/uploads')
+    }
+})
 const upload = multer({ storage: storage });
 
 // Express settings
@@ -74,7 +78,7 @@ app.route("/login")
                 existingUser.token = token;
 
                 // Redirect
-                createCookies(res, existingUser)
+                fc.createCookies(res, existingUser)
 
             } else {
                 res
@@ -128,7 +132,7 @@ app.route("/register")
             user.token = token;
 
             // return new user
-            createCookies(res, user)
+            fc.createCookies(res, user)
 
         } catch (err) {
             console.log(err);
@@ -138,17 +142,21 @@ app.route("/register")
 
 // Notes
 app.all('/notes', async (req, res, next) => {
-    await verifyToken(req, res, next);
+    await fc.verifyToken(req, res, next);
 })
 
 app.route("/notes")
 
     .get(async (req, res) => {
-        extendCookies(req, res)
-        const user = await User.findOne({ email: req.cookies.username })
-        const username = user.name
-        const notes = await Note.find({ owner: user }).populate('attachment')
-        res.status(200).render("notes", { username, notes })
+        const data = await User
+            .findOne({ email: req.cookies.username })
+            .populate({
+                path: 'notes',
+                populate: { path: 'attachment' }
+            })
+        const { name, notes } = data
+        const title = '// ALL NOTES'
+        res.status(200).render("notes", { name, notes, title })
     })
 
     .post(upload.single('noteAttachment'), async (req, res) => {
@@ -209,41 +217,39 @@ app.post("/notes/update/:id", async (req, res) => {
 
 
 // Search items
-app.route("/search")
+app.route("/notes/search")
 
-    .post((req, res) => {
+    .post(async (req, res) => {
+        const user = await User.findOne({ email: req.cookies.username })
+        const { name } = user
         const { keywords } = req.body
-        res.redirect(`/search/${keywords}`);
+
+        let title = 'Enter a search term in the search box'
+        let notes = {}
+
+        // Check if there is any keyword and not whitespace 
+        if (keywords && keywords.trim().length !== 0) {
+            const regex = new RegExp(
+                keywords.split(" ").join("|")
+            );
+            notes = await fc.searchItems(regex, Note, user)
+            title = notes.length > 0 ? `// Search results for "${keywords}"` : `// No results found for "${keywords}"`;
+        };
+
+        res.render("notes", { name, title, notes })
     })
-
-    .get(async (req, res) => {
-        const { keywords } = req.params
-        let title = `Search result for "${keywords}"`
-        const regex = new RegExp(keywords, 'i')
-        Note.find({ 'title': { $regex: query, $options: 'i' } }, (err, note) => {
-            if (err) {
-                console.log(err)
-            } else {
-                console.log(note)
-            }
-        })
-
-
-        if (foundItems.length < 1) {
-            title = `No result found for "${keywords}"`
-        }
-        res.render('search', { title: title, day: today, items: foundItems, flaggedItems: toNotify })
-    });
 
 // Logout user and clear cookies
 app.get("/logout", (req, res) => {
-    clearCookies(res)
+    fc.clearCookies(res)
 });
 
 
 // 404
 app.use("*", (req, res) => {
-    res.redirect('/login');
+    res
+        .status(404)
+        .redirect('/login');
 });
 
 

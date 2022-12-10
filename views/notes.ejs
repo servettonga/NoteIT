@@ -3,7 +3,7 @@
 <div class="container d-flex justify-content-center py-6">
   <div class="pt-lg-12 py-5">
     <div>
-      <p class="text-primary text-uppercase mb-2" style="margin-left: 1rem">// ALL NOTES</p>
+      <p class="text-primary text-uppercase mb-2" style="margin-left: 1rem"><%= title %></p>
     </div>
     <!-- Items -->
     <% if (notes.length> 0) { %>
@@ -98,7 +98,7 @@
           <div class="modal-body">
             <div class="container-fluid justify-content-center">
               <div class="col-lg-12 fadeInUp">
-                <form action="/search" method="post" id="search">
+                <form action="/notes/search" method="post" id="search">
                   <div class="row g-3 align-items-center">
                     <div class="col-10">
                       <div class="mb-3">
@@ -123,7 +123,7 @@
 </div>
 <!-- Notes End -->
 
-<!-- Compose Start -->
+<!-- New note -->
 <div class="modal fade" id="compose" tabindex="-1" aria-labelledby="compose" aria-hidden="true">
   <div class="modal-dialog modal-lg modal-fullscreen-lg-down modal-dialog-centered modal-dialog-scrollable">
     <div class="modal-content">
@@ -170,6 +170,6 @@
     </div>
   </div>
 </div>
-<!-- Compose End -->
+<!-- New note end -->
 
 <%- include('footer') %>

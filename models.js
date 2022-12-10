@@ -19,6 +19,9 @@ const userSchema = new Schema({
     token: {
         type: String
     }
+}, {
+    toObject: { virtuals: true },
+    toJSON: { virtuals: true }
 });
 
 const fileSchema = new Schema({
@@ -59,6 +62,18 @@ const noteSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'User'
     }
+});
+
+userSchema.virtual("notes", {
+    ref: "Note",
+    foreignField: "owner",
+    localField: "_id"
+});
+
+userSchema.virtual("files", {
+    ref: "File",
+    foreignField: "owner",
+    localField: "_id"
 });
 
 export const Note = mongoose.model("Note", noteSchema);

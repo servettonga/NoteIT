@@ -16,9 +16,13 @@ export async function verifyToken(req, res, next) {
         const decoded = jwt.verify(token, process.env.TOKEN_KEY);
         req.user = decoded;
     } catch (err) {
-        return res.status(401).redirect('/login')
+        return res
+            .clearCookie('x-access-token', 'loggedin', 'userid')
+            .clearCookie('loggedin')
+            .status(401)
+            .redirect('/login')
     }
-
+    extendCookies(req, res)
     return next()
 };
 
@@ -55,4 +59,19 @@ export function clearCookies(res) {
         .clearCookie('x-access-token', 'loggedin', 'userid')
         .clearCookie('loggedin')
         .redirect('/login')
+};
+
+// Search items ----------------------------------------------------------------
+export async function searchItems(regex, model, owner) {
+    try {
+        return await model.find({
+            owner: owner,
+            $or: [
+                { title: { $regex: regex, $options: 'i' } },
+                { body: { $regex: regex, $options: 'i' } },
+            ]
+        })
+    } catch (err) {
+        return err
+    }
 };
